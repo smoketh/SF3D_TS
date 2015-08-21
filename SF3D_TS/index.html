@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <style>
+        #canvas {
+            /*background-color: transparent; /* needed because webgl-tutoraisl.css sets canvas bg color to white */
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1;
+        }
+
+        #hud {
+            background-color: transparent; /* needed because webgl-tutoraisl.css sets canvas bg color to white */
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 10;
+        }
+    </style>
+
+
+    <script src="webgl-utils.js"></script>
+    <script src="MatrixTools.js"></script>
+    <script src="Models.js"></script>
+
+    <script src="SpaceObject.js"></script>
+    <script src="app.js"></script>
+
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec3 a_position;
+        attribute vec4 a_color;
+        attribute vec3 a_normal;
+
+        uniform mat4 p_matrix;
+        uniform mat4 u_matrix;
+        uniform mat4 u_Norm_Matrix;
+
+        varying vec4 v_color;
+        varying vec3 vLightWeighting;
+
+        uniform vec3 uAmbientColor;
+        uniform vec3 uLightingDirection;
+        uniform vec3 uDirectionalColor;
+
+
+        void main() 
+        {
+            gl_Position = p_matrix * u_matrix * vec4(a_position, 1.0);
+            
+            vec4 transformedNormal = u_Norm_Matrix * vec4(normalize(a_normal), 1.0);
+            float directionalLightWeighting = dot(transformedNormal.xyz, uLightingDirection); //max(dot(transformedNormal, uLightingDirection), 0.0);
+            vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting*25.0;
+            vLightWeighting = clamp(vLightWeighting, uAmbientColor, vec3(1.0, 1.0, 1.0));
+            v_color = a_color;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec4 v_color;
+        varying vec3 vLightWeighting;
+        void main(void) {
+        gl_FragColor = vec4(v_color.rgb* vLightWeighting, 1.0);
+        }
+    </script>
+
+</head>
+<body>
+    <canvas id="canvas" width="800" height="480"></canvas>
+    <canvas id="hud" width="800" height="600"></canvas>
+</body>
+</html>
