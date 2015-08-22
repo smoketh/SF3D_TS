@@ -21,7 +21,17 @@
 
 module MT
 {
-    
+    export function clone4x4(mat: number[]):number[]
+    {
+        var c: number[] = new Array<number>(16);
+        for (var q = 0; q < 16; q++)
+        {
+            c[q] = mat[q];
+        }
+        return c;
+    }
+
+
     var PI2 = Math.PI * 2;
     export function v3FixPi(a: Vector3, c?: Vector3): Vector3
     {
@@ -467,28 +477,50 @@ module MT
 
     export function computeMatrix(translation:number[], rotation: number[], scale: number[])
     {
-       // console.log(xRotation);
-       // var xRotationMatrix = makeXRotation(rotation[0]);
-       // var yRotationMatrix = makeYRotation(rotation[1]);
-       // var zRotationmatrix = makeZRotation(rotation[2]);
+
          var translationMatrix = makeTranslation(translation[0], translation[1], translation[2]);
-         var rotMatrix = rotation; //makeRotation(rotation[0], rotation[1], rotation[2]);
+         var rotMatrix = rotation;
         var matrix = makeIdentity4x4();
         matrix = matrixMultiply(matrix, makeScale(scale[0], scale[1], scale[2]));
         matrix = matrixMultiply(matrix, rotMatrix);
-       // console.log(xRotationMatrix);
-        //matrix = matrixMultiply(matrix, xRotationMatrix);
-        //matrix = matrixMultiply(matrix, yRotationMatrix);
-        //matrix = matrixMultiply(matrix, zRotationmatrix);
+
         var worldMatrix = matrixMultiply(matrix, translationMatrix);
         return worldMatrix;
-        
 
-       // matrix = matrixMultiply(worldMatrix, viewMatrix);
-       // return matrixMultiply(matrix, projectionMatrix);
     }
+    /*export function computeRelativeMatrix(translation: number[], rotation: number[], relativematrix:number[], scale: number[])
+    {
+        var translationMatrix = makeTranslation(translation[0], translation[1], translation[2]);
+        //var rotMatrix = rotation;
+        var matrix = makeIdentity4x4();
+        matrix = matrixMultiply(matrix, makeScale(scale[0], scale[1], scale[2]));
+        //matrix = matrixMultiply(matrix, relativematrix);
+        //matrix = matrixMultiply(matrix, translationMatrix);
+        // matrix = matrixMultiply(matrix, relativematrix);
 
+        matrix = matrixMultiply(matrix, translationMatrix);
+        var mShift: Vector3 = MT.multiplyVec3(relativematrix, Vector3.FromArray(translation));
+        matrix = matrixMultiply(matrix, MT.makeTranslation(mShift.x, mShift.y, mShift.z));
+        matrix = matrixMultiply(matrix, relativematrix);
 
+        //cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(mShift.x, mShift.y, mShift.z));
+
+  
+//        matrix = matrixMultiply(matrix, rotMatrix);
+        return matrix;
+    }*/
+
+    export function transformVec3viaMat4(a: Vector3, m: number[]): Vector3
+    {
+        var out: Vector3 = new Vector3();
+        var x = a.x, y = a.y, z = a.z,
+            w = m[3] * x + m[7] * y + m[11] * z + m[15]
+        w = w || 1.0
+        out.x= (m[0] * x + m[4] * y + m[8] * z + m[12]) / w
+        out.y = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w
+        out.z = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w
+        return out;
+    }
 
     export function setUniforms(setters, values)
     {
@@ -503,7 +535,15 @@ module MT
     }
 
 
-    
+    export function multiplyVec3(a: number[], vb: Vector3)
+    {
+        var c = new Vector3;
+        var d = vb.x, e = vb.y, b = vb.z;
+        c.x = a[0] * d + a[4] * e + a[8] * b + a[12];
+        c.y = a[1] * d + a[5] * e + a[9] * b + a[13];
+        c.z = a[2] * d + a[6] * e + a[10] * b + a[14];
+        return c
+    };
 
 
     export function makeIdentity4x4(dst?: any)

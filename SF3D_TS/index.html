@@ -48,6 +48,9 @@
         uniform vec3 uLightingDirection;
         uniform vec3 uDirectionalColor;
 
+        uniform float time;
+
+        varying float v_time;
 
         void main() 
         {
@@ -58,6 +61,7 @@
             vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting*25.0;
             vLightWeighting = clamp(vLightWeighting, uAmbientColor, vec3(1.0, 1.0, 1.0));
             v_color = a_color;
+            v_time=(mod(time/45.0, 1.0));
         }
     </script>
     <!-- fragment shader -->
@@ -66,8 +70,20 @@
 
         varying vec4 v_color;
         varying vec3 vLightWeighting;
-        void main(void) {
-        gl_FragColor = vec4(v_color.rgb* vLightWeighting, 1.0);
+        varying float v_time;
+
+        float rand(float co){
+            return fract(sin(dot(co , 12.9898)) * 43758.5453);
+        }
+
+
+        void main(void) 
+        {
+            if(v_color.x>0.9 && v_color.y < 0.1 && v_color.z>0.9)
+            {
+                gl_FragColor = mix(vec4(0.4,0.4, 0.79, 1.0), vec4(0.53, 0.53, 0.93, 1.0), v_time);
+            }
+            else gl_FragColor = vec4(v_color.rgb* vLightWeighting, 1.0);
         }
     </script>
 

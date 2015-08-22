@@ -15,7 +15,7 @@
     var ambientColorLocation;
     var LightingDirectionLocation;
     var LightingColorLocation;
-
+    var sTimeLocation;
 
     export var cameraAngleRadians = MT.degToRad(0);
     export var fieldOfViewRadians = MT.degToRad(75);
@@ -80,7 +80,7 @@
         //FarerBufferInfo = );
         //PeonBufferInfo = new StaticObjectBuffer(gl, Model_Peon.positions, Model_Peon.colors);
         StarBufferInfo = new StaticObjectBuffer(gl, Model_Star.positions, Model_Star.colors, Model_Star.normals);
-        var verts: Float32Array = Model_Sphere.getSpherePositions(12, 5);
+        var verts: Float32Array = Model_Sphere.getSpherePositions(24, 5);
 
         
         TestFarerObject = new SpaceObject("Farer", [0, 0, 0], [0, 0, 0], [25, 25, 25], 12.5,
@@ -110,7 +110,7 @@
         //gl.viewport(0, canv.height * 0.2, gl.drawingBufferWidth, gl.drawingBufferHeight * 0.8);
 
         aspect = gl.drawingBufferWidth/ gl.drawingBufferHeight;//* 0.8;
-        projectionMatrix = MT.makePerspective(fieldOfViewRadians, aspect, 1, 2000);
+        projectionMatrix = MT.makePerspective(fieldOfViewRadians, aspect, 1, 20000);
 
         matrixLocation = gl.getUniformLocation(programInfo.program, "u_matrix");
 
@@ -122,7 +122,7 @@
 
         LightingDirectionLocation = gl.getUniformLocation(programInfo.program, "uLightingDirection");
         LightingColorLocation = gl.getUniformLocation(programInfo.program, "uDirectionalColor");
-
+        sTimeLocation = gl.getUniformLocation(programInfo.program, "time");
 
         gl.enable(gl.CULL_FACE);
         gl.enable(gl.DEPTH_TEST);
@@ -159,26 +159,34 @@
     function keyServer()
     {
         v3RotControl || (v3RotControl = new Vector3);
-        if (Key.isDown(Key.LEFT))//left
+        if (Key.isDown(Key.A))//left
         {
-            console.log("LEFT");
-            v3RotControl.y = 45;
+            //console.log("LEFT");
+            v3RotControl.y = 15;
 
         }
-        else if (Key.isDown(Key.RIGHT))//right
+        else if (Key.isDown(Key.D))//right
         {
-            console.log("RIGHT");
-            v3RotControl.y = -45;
+            //console.log("RIGHT");
+            v3RotControl.y = -15;
         }
-        if (Key.isDown(Key.UP))//up
+        if (Key.isDown(Key.W))//up
         {
-            console.log("UP");
-            v3RotControl.x = 45;
+            //console.log("UP");
+            v3RotControl.x = -15;
         }
-        else if (Key.isDown(Key.DOWN))//down
+        else if (Key.isDown(Key.S))//down
         {
-            console.log("DOWN");
-            v3RotControl.x = -45;
+            //console.log("DOWN");
+            v3RotControl.x = 15;
+        }
+        if (Key.isDown(Key.Q))
+        {
+            v3RotControl.z = 15;
+        }
+        else if (Key.isDown(Key.E))
+        {
+            v3RotControl.z = -15;
         }
 
         v3RotControl = MT.v3Multiply(v3RotControl, MT.deg2RadVar);
@@ -199,15 +207,24 @@
     {
         //Planet.rot[1] += MT.degToRad(15) * dt;
         //if (Planet.rot[1] > Math.PI * 2) Planet.rot[1] -= Math.PI * 2;
-
-        TestFarerObject.ControlObject(new Vector3(), v3RotControl, dt);
+        pRotMatrix = MT.clone4x4( TestFarerObject.matrot);
+        TestFarerObject.ControlObject(new Vector3(0,0, -5), v3RotControl, dt);
 
         for (var q = 0; q < DrawObjects.length; q++)
         {
             if (DrawObjects[q].name == "Star")
             {
-                DrawObjects[q].pos[2] += DrawObjects[q].maxSpeed * dt;
-                if (DrawObjects[q].pos[2] > 100) DrawObjects[q].pos[2] -= 200;
+                var pos: number[]= DrawObjects[q].pos;
+                var plPos: number[] = TestFarerObject.pos;
+                for (var t = 0; t < 3; t++)
+                {
+                    if (pos[t] - plPos[t]>100) pos[t] -= 200;
+                    else if (pos[t] - plPos[t] <-100)pos[t] +=200;
+                }
+
+               // DrawObjects[q].ControlObject(new Vector3(0, 0, 15), new Vector3(), dt);
+                //DrawObjects[q].pos[2] += DrawObjects[q].maxSpeed * dt;
+                //if (DrawObjects[q].pos[2] > 100) DrawObjects[q].pos[2] -= 200;
             }
         }
         //valK += MT.degToRad(25) * dt;
@@ -216,15 +233,29 @@
         
 
     }
+    var pRotMatrix;
     function updateCamera()
     {
-        cameraMatrix = MT.makeIdentity4x4();
-        cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(TestFarerObject.pos[0], TestFarerObject.pos[1]+15, TestFarerObject.pos[2]+55));
-        //cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(0, 15, 55));
-        cameraMatrix = MT.matrixMultiply(cameraMatrix, TestFarerObject.matrot);
-        //cameraMatrix = MT.turnMatrix(cameraMatrix, TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]); //MT.matrixMultiply(cameraMatrix, MT.makeRotation(TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]));
+        var cRot: number[] = new Array<number>();
+        for (var q = 0; q < 16; q++)
+        {
+            cRot[q] = Mathf.lerp(pRotMatrix[q], TestFarerObject.matrot[q], dt/2 );
+        }
         
-       // cameraMatrix = MT.makeTranslation(
+
+
+        cameraMatrix = MT.makeIdentity4x4();
+        cameraMatrix = MT.matrixMultiply(cameraMatrix, cRot);
+
+        //var trans=
+        var mShift: Vector3 = MT.multiplyVec3(TestFarerObject.matrot, new Vector3(0, 15, 55));
+        cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(TestFarerObject.pos[0], TestFarerObject.pos[1], TestFarerObject.pos[2]));
+        cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(mShift.x, mShift.y, mShift.z));
+
+        //pCameraMatrix = cameraMatrix;
+
+        
+        //Stars are relative to camera
     }
 
     var cameraMatrix;
@@ -232,6 +263,8 @@
     var approxTransformation;
     function draw3dScene()
     {
+        var tN = Date.now()/10.0;
+        //console.log(tN * MT.deg2RadVar % 3.14);
         var numFs = 5;
         var radius = 70;
 
@@ -255,6 +288,7 @@
                 gl.uniform3f(ambientColorLocation, 0.4, 0.4, 0.4);
 
 
+
             var lightingDirection = [
                 0.7, -1, -1
             ];
@@ -268,12 +302,22 @@
 
             gl.uniform3fv(LightingDirectionLocation, adjustedLD); //[-0.25, -0.25, -1]);
 
-            
+
+
+            gl.uniform1f(sTimeLocation, tN % 1000.000);
 
             gl.uniform3fv(LightingColorLocation, [1,1,1]);
 
+            /*
+            if (DrawObjects[q].name == "Star")
+            {
+                DrawObjects[q].matrix = MT.computeRelativeMatrix(DrawObjects[q].pos, DrawObjects[q].matrot, cameraMatrix, DrawObjects[q].scale);
 
-            DrawObjects[q].matrix = MT.computeMatrix(DrawObjects[q].pos, DrawObjects[q].matrot, DrawObjects[q].scale);
+                //var worldMatrix = 
+            }
+            else*/ DrawObjects[q].matrix = MT.computeMatrix(DrawObjects[q].pos, DrawObjects[q].matrot, DrawObjects[q].scale);
+
+
 
             //Stars[q].matrix = 
 
@@ -309,13 +353,13 @@
         ctx.fill();
         roundRect(ctx, 0.5, 480, canv2d.width - 2, canv2d.height * 0.2 - 4, 5, true, true);
 
-        ctx.fillStyle = 'white';
+        /*ctx.fillStyle = 'white';
         ctx.font = "30px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("----Space Farer 3d----", canv2d.width / 2, 35);
         ctx.font = "25px sans-serif";
         ctx.fillText("(C) Picturesque games 2015", canv2d.width / 2, canv2d.height * 0.75);
-
+        */
         //ctx.drawImage(img, canv2d.width / 2 - 200, canv2d.height - canv2d.height * 0.2+15);
         drawRadarEllipse(ctx, canv2d.width / 2, canv2d.height - canv2d.height * 0.1, 400, 80);
     }
@@ -423,9 +467,21 @@
         UP: 38,
         RIGHT: 39,
         DOWN: 40,
+        W: 87,
+        S: 83,
+        A: 65,
+        D: 68,
+        Q: 81,
+        E: 69,
+        R: 82,
+        F: 70,
+        DOT: 188,
+        COMMA: 190,
+
 
         isDown: function (keyCode)
         {
+            //console.log(this._pressed);
             return this._pressed[keyCode];
         },
 

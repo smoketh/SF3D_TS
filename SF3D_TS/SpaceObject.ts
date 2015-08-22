@@ -65,7 +65,11 @@
         setMov = MT.v3Multiply(setMov, dt);
         this.CurrentSpeed = MT.v3Add(this.CurrentSpeed, setMov);
         this.CurrentSpeed = MT.v3Lerp(this.CurrentSpeed, new Vector3(), this.decay * dt); //MT.v3Multiply(this.CurrentSpeed, this.decay/dt);
-        this.pos = MT.v3Add(Vector3.FromArray(this.pos), this.CurrentSpeed).toArray();
+        this.CurrentSpeed = MT.v3LinearClamp(this.CurrentSpeed, -this.maxSpeed, this.maxSpeed);
+
+
+
+        //this.pos = MT.v3Add(Vector3.FromArray(this.pos), this.CurrentSpeed).toArray();
         //MT.v3Add(Vector3.FromArray(this.pos), this.CurrentRotation).toArray()
         
 
@@ -82,6 +86,11 @@
         this.matrot = MT.turnMatrix(this.matrot, this.CurrentRotation.x, this.CurrentRotation.y, this.CurrentRotation.z); // MT.matrixMultiply(this.matrot, rotForce);
         //this.cu
 
+
+        //now it should push object relatively through it's rotation
+        this.pos = MT.v3Add(Vector3.FromArray(this.pos), MT.multiplyVec3(this.matrot, this.CurrentSpeed)).toArray();
+        //this.pos = MT.v3Add(Vector3.FromArray(this.pos), MT.transformVec3viaMat4(this.CurrentRotation, this.matrot)).toArray();
+        
 
         //this.rot = MT.v3Add(Vector3.FromArray(this.rot), this.CurrentRotation).toArray();
         //this.rot = MT.v3FixPi(Vector3.FromArray(this.rot)).toArray();
