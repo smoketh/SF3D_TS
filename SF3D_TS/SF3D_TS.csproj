@@ -24,7 +24,6 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="index.html" />
-    <Content Include="Test.html" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
