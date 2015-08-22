@@ -197,10 +197,19 @@
 
     function updateLogic()
     {
-        Planet.rot[1] += MT.degToRad(15) * dt;
-        if (Planet.rot[1] > Math.PI * 2) Planet.rot[1] -= Math.PI * 2;
+        //Planet.rot[1] += MT.degToRad(15) * dt;
+        //if (Planet.rot[1] > Math.PI * 2) Planet.rot[1] -= Math.PI * 2;
 
         TestFarerObject.ControlObject(new Vector3(), v3RotControl, dt);
+
+        for (var q = 0; q < DrawObjects.length; q++)
+        {
+            if (DrawObjects[q].name == "Star")
+            {
+                DrawObjects[q].pos[2] += DrawObjects[q].maxSpeed * dt;
+                if (DrawObjects[q].pos[2] > 100) DrawObjects[q].pos[2] -= 200;
+            }
+        }
         //valK += MT.degToRad(25) * dt;
         //if (valK > 360) valK -= 360;
         //TestFarerObject.rot = [valK, valK, valK];
@@ -212,7 +221,7 @@
         cameraMatrix = MT.makeIdentity4x4();
         cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(TestFarerObject.pos[0], TestFarerObject.pos[1]+15, TestFarerObject.pos[2]+55));
         //cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(0, 15, 55));
-        cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeRotation(TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]));
+        cameraMatrix = MT.matrixMultiply(cameraMatrix, TestFarerObject.matrot);
         //cameraMatrix = MT.turnMatrix(cameraMatrix, TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]); //MT.matrixMultiply(cameraMatrix, MT.makeRotation(TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]));
         
        // cameraMatrix = MT.makeTranslation(
@@ -237,14 +246,13 @@
         {
             gl.useProgram(programInfo.program);
             WebGL_Utilities.setBuffersAndAttributes(gl, programInfo.attribSetters, DrawObjects[q].buffer);
-            if (DrawObjects[q].name == "Star")
+            if (DrawObjects[q].fullLit == true)
             {
                 gl.uniform3f(ambientColorLocation, 1,1,1);
-                DrawObjects[q].pos[2] += DrawObjects[q].maxSpeed * dt;
-                if (DrawObjects[q].pos[2] > 100) DrawObjects[q].pos[2] -= 200;
+                
             }
             else 
-                gl.uniform3f(ambientColorLocation, 0.1, 0.1, 0.1);
+                gl.uniform3f(ambientColorLocation, 0.4, 0.4, 0.4);
 
 
             var lightingDirection = [
@@ -265,7 +273,7 @@
             gl.uniform3fv(LightingColorLocation, [1,1,1]);
 
 
-            DrawObjects[q].matrix = MT.computeMatrix(DrawObjects[q].pos, DrawObjects[q].rot, DrawObjects[q].scale);
+            DrawObjects[q].matrix = MT.computeMatrix(DrawObjects[q].pos, DrawObjects[q].matrot, DrawObjects[q].scale);
 
             //Stars[q].matrix = 
 

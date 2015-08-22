@@ -472,7 +472,7 @@ module MT
        // var yRotationMatrix = makeYRotation(rotation[1]);
        // var zRotationmatrix = makeZRotation(rotation[2]);
          var translationMatrix = makeTranslation(translation[0], translation[1], translation[2]);
-        var rotMatrix = makeRotation(rotation[0], rotation[1], rotation[2]);
+         var rotMatrix = rotation; //makeRotation(rotation[0], rotation[1], rotation[2]);
         var matrix = makeIdentity4x4();
         matrix = matrixMultiply(matrix, makeScale(scale[0], scale[1], scale[2]));
         matrix = matrixMultiply(matrix, rotMatrix);

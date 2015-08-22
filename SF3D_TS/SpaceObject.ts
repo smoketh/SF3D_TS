@@ -2,7 +2,7 @@
 {
     name: string;
     pos: number[];
-    rot: number[];
+    matrot: number[];
     scale: number[];
 
 
@@ -38,7 +38,7 @@
         this.name = name;
         this.scale = scale;
         this.pos = position;
-        this.rot = rotation;
+        this.matrot = MT.makeRotation (rotation[0], rotation[1], rotation[2]);
 
         this.radius = colliderRadius;
         this.maxSpeed = maxSpeed;
@@ -73,12 +73,17 @@
         ampRot = MT.v3Multiply(ampRot, dt);
         this.CurrentRotation = MT.v3Add(this.CurrentRotation, ampRot);
         this.CurrentRotation = MT.v3LinearClamp(this.CurrentRotation, -this.maxAngular, this.maxAngular);
-        this.CurrentRotation = MT.v3Lerp(this.CurrentRotation, new Vector3(), this.decay  * dt);
-        
+        this.CurrentRotation = MT.v3Lerp(this.CurrentRotation, new Vector3(), this.decay * dt);
+        this.CurrentRotation = MT.v3LinearClamp(this.CurrentRotation, -Math.PI, Math.PI);
+
+        //var rotForce:number[] = MT.makeRotation(this.CurrentRotation[0], this.CurrentRotation[1], this.CurrentRotation[2]);
+        //var rotForce = MT.makeInverse(rotForce);
+
+        this.matrot = MT.turnMatrix(this.matrot, this.CurrentRotation.x, this.CurrentRotation.y, this.CurrentRotation.z); // MT.matrixMultiply(this.matrot, rotForce);
         //this.cu
 
 
-        this.rot = MT.v3Add(Vector3.FromArray(this.rot), this.CurrentRotation).toArray();
+        //this.rot = MT.v3Add(Vector3.FromArray(this.rot), this.CurrentRotation).toArray();
         //this.rot = MT.v3FixPi(Vector3.FromArray(this.rot)).toArray();
        /* for (var q = 0; q < this.rot.length; q++)
         {
