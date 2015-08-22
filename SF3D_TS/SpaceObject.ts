@@ -63,7 +63,7 @@
     ControlObject(setMov: Vector3, ampRot: Vector3, dt: number)
     {
         setMov = MT.v3Multiply(setMov, dt);
-        this.CurrentSpeed = MT.v3Add(this.CurrentRotation, setMov);
+        this.CurrentSpeed = MT.v3Add(this.CurrentSpeed, setMov);
         this.CurrentSpeed = MT.v3Lerp(this.CurrentSpeed, new Vector3(), this.decay * dt); //MT.v3Multiply(this.CurrentSpeed, this.decay/dt);
         this.pos = MT.v3Add(Vector3.FromArray(this.pos), this.CurrentSpeed).toArray();
         //MT.v3Add(Vector3.FromArray(this.pos), this.CurrentRotation).toArray()

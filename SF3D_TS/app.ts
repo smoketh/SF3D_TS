@@ -212,8 +212,8 @@
         cameraMatrix = MT.makeIdentity4x4();
         cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(TestFarerObject.pos[0], TestFarerObject.pos[1]+15, TestFarerObject.pos[2]+55));
         //cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeTranslation(0, 15, 55));
-
         cameraMatrix = MT.matrixMultiply(cameraMatrix, MT.makeRotation(TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]));
+        //cameraMatrix = MT.turnMatrix(cameraMatrix, TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]); //MT.matrixMultiply(cameraMatrix, MT.makeRotation(TestFarerObject.rot[0], TestFarerObject.rot[1], TestFarerObject.rot[2]));
         
        // cameraMatrix = MT.makeTranslation(
     }
