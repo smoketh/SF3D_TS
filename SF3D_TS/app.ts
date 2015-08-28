@@ -139,12 +139,15 @@
     {
 
         calcDeltaTime();
-        keyServer();
-        updateLogic();
-        updateCamera();
-        draw3dScene();
-        draw2dScene();
-        if (focused) requestAnimationFrame(updateScene);
+        if (focused)
+        {
+            keyServer();
+            updateLogic();
+            updateCamera();
+            draw3dScene();
+            draw2dScene();
+        }
+        requestAnimationFrame(updateScene);
     }
 
     function calcDeltaTime()
@@ -520,8 +523,8 @@ window.onfocus = () =>
     if (Main.initialized)
     {
         
-        Main.lastUpdate = Date.now();
-        requestAnimationFrame(Main.updateScene);
+       // Main.lastUpdate = Date.now();
+       // requestAnimationFrame(Main.updateScene);
     }
     else Main.OnLoad();
 }

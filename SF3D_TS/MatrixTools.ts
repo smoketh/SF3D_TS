@@ -114,7 +114,7 @@ module MT
      * @param {Matrix4} [dst] optional matrix to store result
      * @return {Matrix4} dst or a new matrix of none provided
      * @memberOf module:webgl-3d-math
-     */
+     *
     export function makeXRotation(angleInRadians, dst?)
     {
         dst = dst || new Float32Array(16);
@@ -139,7 +139,7 @@ module MT
         dst[15] = 1;
 
         return dst;
-    }
+    }*/
 
     export function makeRotation(x: number, y: number, z: number): number[]
     {
@@ -230,17 +230,17 @@ module MT
         return out;
     };
 
-    export function makeFixedRotation(x: number, y: number, z: number): number[]
+    /*export function makeFixedRotation(x: number, y: number, z: number): number[]
     {
         var matrix: number[] = makeIdentity4x4();
-        matrix = matrixMultiply(matrix, makeXRotation(x-Math.PI/2));
+        matrix = matrixMultiply(matrix, makeXRotation(x));
         matrix = matrixMultiply(matrix, makeYRotation(y));
         matrix = matrixMultiply(matrix, makeZRotation(z));
 
         return matrix;
 
 
-    }
+    }*/
 
 
     /**
@@ -250,7 +250,7 @@ module MT
      * @return {Matrix4} dst or a new matrix of none provided
      * @memberOf module:webgl-3d-math
      */
-    export function makeYRotation(angleInRadians, dst?)
+    /*export function makeYRotation(angleInRadians, dst?)
     {
         dst = dst || new Float32Array(16);
         var c = Math.cos(angleInRadians);
@@ -282,7 +282,7 @@ module MT
      * @param {Matrix4} [dst] optional matrix to store result
      * @return {Matrix4} dst or a new matrix of none provided
      * @memberOf module:webgl-3d-math
-     */
+     *
     export function makeZRotation(angleInRadians, dst?)
     {
         dst = dst || new Float32Array(16);
@@ -307,7 +307,7 @@ module MT
         dst[15] = 1;
 
         return dst;
-    }
+    }*/
     export function makeScale(sx:number, sy:number, sz:number): number[]
     {
         return [
@@ -454,7 +454,7 @@ module MT
         ];
     }
 
-    export function matrixVectorMultiply(v, m)
+    /*export function matrixVectorMultiply(v, m)
     {
         var dst = [];
         for (var i = 0; i < 4; ++i)
@@ -464,7 +464,7 @@ module MT
                 dst[i] += v[j] * m[j * 4 + i];
         }
         return dst;
-    };
+    };*/
 
     export var deg2RadVar = Math.PI / 180;
 
@@ -508,7 +508,7 @@ module MT
   
 //        matrix = matrixMultiply(matrix, rotMatrix);
         return matrix;
-    }*/
+    }*
 
     export function transformVec3viaMat4(a: Vector3, m: number[]): Vector3
     {
@@ -520,7 +520,7 @@ module MT
         out.y = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w
         out.z = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w
         return out;
-    }
+    }*/
 
     export function setUniforms(setters, values)
     {
@@ -551,20 +551,11 @@ module MT
         var dst = dst || new Float32Array(16);
 
         dst[0] = 1;
-        dst[1] = 0;
-        dst[2] = 0;
-        dst[3] = 0;
-        dst[4] = 0;
+        
         dst[5] = 1;
-        dst[6] = 0;
-        dst[7] = 0;
-        dst[8] = 0;
-        dst[9] = 0;
+        
         dst[10] = 1;
-        dst[11] = 0;
-        dst[12] = 0;
-        dst[13] = 0;
-        dst[14] = 0;
+        
         dst[15] = 1;
 
         return dst;
@@ -706,18 +697,15 @@ module MT
         b[0] = a[0];
         b[1] = a[1];
         b[2] = a[2];
-        b[3] = 0;
+
         b[4] = a[3];
         b[5] = a[4];
         b[6] = a[5];
-        b[7] = 0;
+
         b[8] = a[6];
         b[9] = a[7];
         b[10] = a[8];
-        b[11] = 0;
-        b[12] = 0;
-        b[13] = 0;
-        b[14] = 0;
+
         b[15] = 1;
         return b
     };
